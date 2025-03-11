@@ -1,5 +1,6 @@
 import winim/lean
 import strformat
+import winim/com
 
 proc injectDLL(processName: string, dllPath: string) =
   echo "DLL Injection Demonstration"

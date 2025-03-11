@@ -143,7 +143,7 @@ proc demonstrateApiHook() =
     MessageBoxA(0, "Original message", "Original caption", MB_OK)
     
     # Remove the hook when done
-    removeHook()
+    discard removeHook()
   else:
     echo "Failed to install hook"
 

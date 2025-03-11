@@ -1,6 +1,7 @@
 import winim/lean
 import strformat
 import strutils
+import winim/com
 
 proc scanProcessMemory(targetProcessName: string, signature: seq[byte]) =
   echo "Memory Scanning Demonstration"
