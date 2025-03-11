@@ -1,4 +1,5 @@
 import winim/lean
+import winim/utils  # This might provide additional structure definitions
 import strformat
 
 proc memoryOnlyTest() =
@@ -16,21 +17,23 @@ proc memoryOnlyTest() =
   var process = GetCurrentProcessId()
   echo fmt"Process ID: {process}"
   
-  # List running processes (basic example)
-  var entry: PROCESSENTRY32W
-  entry.dwSize = sizeof(PROCESSENTRY32W).DWORD
+  # List running processes using the ansi version explicitly
+  var entry: PROCESSENTRY32
+  entry.dwSize = sizeof(PROCESSENTRY32).DWORD
   
   let snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0)
   defer: CloseHandle(snapshot)
   
-  if Process32FirstW(snapshot, entry.addr):
+  if Process32First(snapshot, addr entry):
     echo "Running processes:"
     while true:
-      var processName = $entry.szExeFile
+      # Safely convert the name using the cstring cast technique
+      let exeFile = cast[cstring](addr entry.szExeFile[0])
+      let processName = $exeFile
       
       echo fmt"  {entry.th32ProcessID}: {processName}"
       
-      if not Process32NextW(snapshot, entry.addr):
+      if not Process32Next(snapshot, addr entry):
         break
 
 memoryOnlyTest() 
